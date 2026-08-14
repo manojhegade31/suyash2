@@ -1,1 +1,859 @@
-# suyash2
+<!DOCTYPE html>  <html lang="mr">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Mission समास - ऑनलाईन क्विझ</title>  
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:ital@0;1&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">  
+    <style>  
+        :root {  
+            --bg-dark: #050814;  
+            --card-bg: #0c122c;  
+            --accent-gold: #ffd700;  
+            --gold-glow: #ffae00;  
+            --correct-green: #2e7d32;  
+            --correct-border: #4caf50;  
+            --wrong-red: #c62828;  
+            --wrong-border: #ef5350;  
+            --text-light: #ffffff;  
+            --text-dim: #b0bec5;  
+        }  * {  
+        box-sizing: border-box;  
+        margin: 0;  
+        padding: 0;  
+        font-family: 'Tiro Devanagari Marathi', 'Poppins', sans-serif;  
+        user-select: none;  
+    }  
+
+    body {  
+        background: radial-gradient(circle at center, #1a237e 0%, #050814 100%);  
+        color: var(--text-light);  
+        min-height: 100vh;  
+        display: flex;  
+        justify-content: center;  
+        align-items: center;  
+        padding: 15px;  
+        overflow-x: hidden;  
+    }  
+
+    .quiz-container {  
+        width: 100%;  
+        max-width: 850px;  
+        background: var(--card-bg);  
+        border: 2px solid var(--accent-gold);  
+        border-radius: 24px;  
+        box-shadow: 0 0 35px rgba(255, 215, 0, 0.25), inset 0 0 15px rgba(255, 215, 0, 0.15);  
+        padding: 35px 25px;  
+        position: relative;  
+        text-align: center;  
+    }  
+
+    /* Header Bar */  
+    .header-bar {  
+        display: flex;  
+        justify-content: space-between;  
+        align-items: center;  
+        margin-bottom: 25px;  
+        border-bottom: 1px solid rgba(255, 215, 0, 0.3);  
+        padding-bottom: 15px;  
+    }  
+
+    .sound-btn {  
+        background: rgba(255, 215, 0, 0.1);  
+        border: 1px solid var(--accent-gold);  
+        color: var(--accent-gold);  
+        padding: 8px 18px;  
+        border-radius: 20px;  
+        cursor: pointer;  
+        font-size: 0.95rem;  
+        transition: all 0.3s;  
+    }  
+
+    .sound-btn:hover {  
+        background: var(--accent-gold);  
+        color: #000;  
+    }  
+
+    .timer-box {  
+        font-size: 1.3rem;  
+        font-weight: bold;  
+        color: var(--accent-gold);  
+        background: rgba(0, 0, 0, 0.5);  
+        padding: 8px 22px;  
+        border-radius: 25px;  
+        border: 1px solid var(--accent-gold);  
+        display: flex;  
+        align-items: center;  
+        gap: 8px;  
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);  
+    }  
+
+    /* Screens */  
+    .screen {  
+        display: none;  
+    }  
+
+    .screen.active {  
+        display: block;  
+        animation: fadeIn 0.4s ease-out;  
+    }  
+
+    @keyframes fadeIn {  
+        from { opacity: 0; transform: translateY(12px); }  
+        to { opacity: 1; transform: translateY(0); }  
+    }  
+
+    /* Start Screen */  
+    .start-screen {  
+        padding: 40px 10px;  
+    }  
+
+    .main-title {  
+        font-size: 3.8rem;  
+        color: var(--accent-gold);  
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 174, 0, 0.4);  
+        letter-spacing: 2px;  
+        margin-bottom: 40px;  
+        font-weight: 700;  
+    }  
+
+    .start-btn {  
+        background: linear-gradient(135deg, #ffae00, #ffd700);  
+        color: #050814;  
+        font-size: 1.8rem;  
+        font-weight: bold;  
+        padding: 16px 65px;  
+        border: none;  
+        border-radius: 50px;  
+        cursor: pointer;  
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);  
+        transition: transform 0.2s, box-shadow 0.2s;  
+        letter-spacing: 1px;  
+    }  
+
+    .start-btn:hover {  
+        transform: scale(1.08);  
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.9);  
+    }  
+
+    /* Question Box */  
+    .question-box {  
+        font-size: 1.45rem;  
+        font-weight: 600;  
+        margin-bottom: 30px;  
+        background: rgba(0, 0, 0, 0.4);  
+        padding: 22px;  
+        border-radius: 15px;  
+        border-left: 5px solid var(--accent-gold);  
+        text-align: left;  
+        line-height: 1.6;  
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);  
+    }  
+
+    /* Options Grid */  
+    .options-grid {  
+        display: grid;  
+        grid-template-columns: 1fr 1fr;  
+        gap: 16px;  
+        margin-bottom: 20px;  
+    }  
+
+    @media (max-width: 650px) {  
+        .options-grid {  
+            grid-template-columns: 1fr;  
+        }  
+        .main-title {  
+            font-size: 2.8rem;  
+        }  
+    }  
+
+    .option-btn {  
+        background: linear-gradient(135deg, #131c42, #0a1026);  
+        border: 1.5px solid #233366;  
+        color: var(--text-light);  
+        padding: 16px 20px;  
+        border-radius: 12px;  
+        font-size: 1.15rem;  
+        text-align: left;  
+        cursor: pointer;  
+        transition: all 0.2s;  
+        display: flex;  
+        align-items: center;  
+        line-height: 1.4;  
+    }  
+
+    .option-btn:hover:not(:disabled) {  
+        border-color: var(--accent-gold);  
+        background: #1a275c;  
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);  
+    }  
+
+    .option-btn.correct {  
+        background: linear-gradient(135deg, #1b5e20, var(--correct-green)) !important;  
+        border-color: var(--correct-border) !important;  
+        color: #fff !important;  
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);  
+    }  
+
+    .option-btn.wrong {  
+        background: linear-gradient(135deg, #b71c1c, var(--wrong-red)) !important;  
+        border-color: var(--wrong-border) !important;  
+        color: #fff !important;  
+        box-shadow: 0 0 20px rgba(239, 83, 80, 0.8);  
+    }  
+
+    /* Explanation Box */  
+    .explanation-box {  
+        display: none;  
+        margin-top: 20px;  
+        padding: 18px;  
+        border-radius: 12px;  
+        font-size: 1.1rem;  
+        text-align: left;  
+        line-height: 1.6;  
+        animation: fadeIn 0.3s ease-in;  
+    }  
+
+    .explanation-box.correct-exp {  
+        background: rgba(46, 125, 50, 0.2);  
+        border: 1px solid var(--correct-border);  
+        color: #81c784;  
+    }  
+
+    .explanation-box.wrong-exp {  
+        background: rgba(198, 40, 40, 0.2);  
+        border: 1px solid var(--wrong-border);  
+        color: #e57373;  
+    }  
+
+    /* Result Screen */  
+    .result-screen .trophy {  
+        font-size: 7rem;  
+        margin-bottom: 15px;  
+        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));  
+        animation: floatTrophy 2s infinite alternate ease-in-out;  
+    }  
+
+    @keyframes floatTrophy {  
+        from { transform: translateY(0); }  
+        to { transform: translateY(-15px); }  
+    }  
+
+    .result-screen h2 {  
+        font-size: 2.2rem;  
+        color: var(--accent-gold);  
+        margin-bottom: 15px;  
+    }  
+
+    .score-display {  
+        font-size: 3.5rem;  
+        font-weight: bold;  
+        color: var(--text-light);  
+        margin-bottom: 20px;  
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);  
+    }  
+
+    .restart-btn {  
+        background: linear-gradient(135deg, #2e7d32, #4caf50);  
+        color: white;  
+        font-size: 1.3rem;  
+        font-weight: bold;  
+        padding: 14px 45px;  
+        border: none;  
+        border-radius: 35px;  
+        cursor: pointer;  
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);  
+        transition: transform 0.2s;  
+    }  
+
+    .restart-btn:hover {  
+        transform: scale(1.06);  
+    }  
+</style>
+
+</head>  
+<body>  <div class="quiz-container">  
+    <!-- Header Bar -->  
+    <div class="header-bar">  
+        <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 आवाज: सुरू</button>  
+        <div class="timer-box" id="timerBox" style="display: none;">  
+            ⏱️ <span id="timer">45</span> सेकंद  
+        </div>  
+    </div>  
+
+    <!-- Start Screen -->  
+    <div class="screen start-screen active" id="startScreen">  
+        <h1 class="main-title">Mission समास</h1>  
+        <button class="start-btn" onclick="startQuiz()">START</button>  
+    </div>  
+
+    <!-- Quiz Screen -->  
+    <div class="screen" id="quizScreen">  
+        <div class="question-box" id="questionText">प्रश्नाचे लिखाण येथे येईल...</div>  
+        <div class="options-grid" id="optionsContainer">  
+            <!-- Options Grid -->  
+        </div>  
+        <div class="explanation-box" id="explanationBox"></div>  
+    </div>  
+
+    <!-- Result Screen -->  
+    <div class="screen result-screen" id="resultScreen">  
+        <div class="trophy">🏆</div>  
+        <h2>अभिनंदन! क्विझ पूर्ण झाली!</h2>  
+        <div class="score-display" id="scoreDisplay">0 / 45</div>  
+        <p id="resultMessage" style="font-size: 1.25rem; color: var(--text-dim); margin-bottom: 30px;"></p>  
+        <button class="restart-btn" onclick="startQuiz()">पुन्हा प्रयत्न करा</button>  
+    </div>  
+</div>  
+
+<script>  
+    // All 45 Marathi Grammar Questions Data  
+    const rawQuestions = [  
+        {  
+            q: "'समास' या शब्दाचा मूळ संस्कृत धातू आणि अर्थ कोणता?",  
+            options: ["'सम् + आस्' = एकत्र बसणे", "'सम् + अस्' = एकत्र करणे", "'स + मासू' = संक्षिप्त करणे", "'सम् + आस' = जोडून सांगणे"],  
+            answer: "'सम् + अस्' = एकत्र करणे",  
+            exp: "'सम् + अस्' या संस्कृत धातूपासून 'समास' हा शब्द तयार झाला असून त्याचा अर्थ 'एकत्र करणे' असा होतो."  
+        },  
+        {  
+            q: "ज्या समासात पहिले पद महत्त्वाचे (प्रधान) असते, तो समास कोणता?",  
+            options: ["तत्पुरुष समास", "द्वंद्व समास", "अव्ययीभाव समास", "बहुव्रीही समास"],  
+            answer: "अव्ययीभाव समास",  
+            exp: "अव्ययीभाव समासात पहिले पद मुख्य असून तो शब्द वाक्यात क्रियाविशेषण अव्ययासारखा वापरला जातो."  
+        },  
+        {  
+            q: "'प्रतिदिन' या सामासिक शब्दाचा योग्य विग्रह कोणता?",  
+            options: ["दिवस आणि रात्र", "प्रत्येक दिवशी", "सर्व दिवस", "एका दिवशी"],  
+            answer: "प्रत्येक दिवशी",  
+            exp: "'प्रति' हा संस्कृत उपसर्ग लागल्यामुळे 'प्रतिदिन' = 'प्रत्येक दिवशी' असा विग्रह होतो (अव्ययीभाव समास)."  
+        },  
+        {  
+            q: "'राजपुत्र' या शब्दाचा 'राजाचा पुत्र' असा विग्रह होतो, यात कोणता समास आहे?",  
+            options: ["तृतीया तत्पुरुष", "षष्ठी तत्पुरुष", "सप्तमी तत्पुरुष", "द्वितीया तत्पुरुष"],  
+            answer: "षष्ठी तत्पुरुष",  
+            exp: "विग्रह करताना 'चा' हा षष्ठी विभक्तीचा प्रत्यय वापरला गेला आहे."  
+        },  
+        {  
+            q: "ज्या समासातील दोन्ही पदे अर्थदृष्ट्या समान दर्जाची (प्रधान) असतात, त्यास काय म्हणतात?",  
+            options: ["द्वंद्व समास", "बहुव्रीही समास", "अव्ययीभाव समास", "तत्पुरुष समास"],  
+            answer: "द्वंद्व समास",  
+            exp: "द्वंद्व समासात दोन्ही पदे महत्त्वाची असतात आणि ती 'आणि, व, किंवा, अथवा' यांसारख्या उभयान्वयी अव्ययांनी जोडलेली असतात."  
+        },  
+        {  
+            q: "'आई-बाप' या सामासिक शब्दाचा विग्रह कसा होईल?",  
+            options: ["आई किंवा बाप", "आई आणि बाप", "आईसारखा बाप", "आई अथवा बाप"],  
+            answer: "आई आणि बाप",  
+            exp: "हा इतरेतर द्वंद्व समास आहे, ज्याचा विग्रह 'आणि' किंवा 'व' या समुच्चयबोधक अव्ययाने होतो."  
+        },  
+        {  
+            q: "'गजानन' (गजाचे आहे आनन ज्याचे तो - गणपती) हे कोणत्या समासाचे उदाहरण आहे?",  
+            options: ["तत्पुरुष समास", "बहुव्रीही समास", "कर्मधारय समास", "द्विगु समास"],  
+            answer: "बहुव्रीही समास",  
+            exp: "ज्या समासात दोन्ही पदे गौण असून तिसऱ्याच पदाचा (गणपती) बोध होतो, तेथे बहुव्रीही समास होतो."  
+        },  
+        {  
+            q: "'पंचवटी' या सामासिक शब्दात पहिले पद संख्याविशेषण आहे. हा कोणता समास आहे?",  
+            options: ["द्विगु समास", "मध्यमपदलोपी समास", "अलुक तत्पुरुष समास", "उपपद तत्पुरुष समास"],  
+            answer: "द्विगु समास",  
+            exp: "पहिले पद संख्याविशेषण असून संपूर्ण शब्दावरून समुदायाचा बोध होतो (पाच वडांचा समूह), तेव्हा द्विगु समास होतो."  
+        },  
+        {  
+            q: "'तोंडपाठ' या शब्दाचा विग्रह 'तोंडाने पाठ' असा होतो. यात कोणती विभक्ती आहे?",  
+            options: ["द्वितीया", "तृतीया", "चतुर्थी", "पंचमी"],  
+            answer: "तृतीया",  
+            exp: "'ने' हा तृतीया विभक्तीचा प्रत्यय लागल्यामुळे हा तृतीया तत्पुरुष समास आहे."  
+        },  
+        {  
+            q: "'ऋणमुक्त' शब्दाचा विग्रह 'ऋणातून मुक्त' असा होतो. हा कोणता समास आहे?",  
+            options: ["पंचमी तत्पुरुष", "षष्ठी तत्पुरुष", "सप्तमी तत्पुरुष", "नञ् तत्पुरुष"],  
+            answer: "पंचमी तत्पुरुष",  
+            exp: "'तून / ऊन' हा पंचमी विभक्तीचा प्रत्यय विग्रहामध्ये वापरला गेला आहे."  
+        },  
+        {  
+            q: "'पापपुण्य' या शब्दाचा विग्रह 'पाप किंवा पुण्य' असा होतो, हा कोणत्या प्रकारचा द्वंद्व समास आहे?",  
+            options: ["इतरेतर द्वंद्व", "वैकल्पिक द्वंद्व", "समाहार द्वंद्व", "यांपैकी नाही"],  
+            answer: "वैकल्पिक द्वंद्व",  
+            exp: "विग्रह करताना 'किंवा', 'अथवा' या विकल्पबोधक अव्ययांचा वापर झाला आहे."  
+        },  
+        {  
+            q: "'भाजीपाला' या सामासिक शब्दात भाजी, पाला याशिवाय इतर तत्सम वस्तूंचा समावेश होतो. हा कोणता समास आहे?",  
+            options: ["समाहार द्वंद्व", "वैकल्पिक द्वंद्व", "इतरेतर द्वंद्व", "कर्मधारय समास"],  
+            answer: "समाहार द्वंद्व",  
+            exp: "ज्या समासात पदांच्या अर्थाशिवाय त्या जातीच्या इतर गोष्टींचा समावेश होतो, त्याला समाहार द्वंद्व म्हणतात."  
+        },  
+        {  
+            q: "'अनादर' (आदर नसलेला) या सामासिक शब्दात सुरुवातीला 'अ-' हा नकारदर्शक उपसर्ग आहे. हा कोणता समास आहे?",  
+            options: ["नञ् तत्पुरुष समास", "अलुक तत्पुरुष समास", "मध्यमपदलोपी समास", "उपपद तत्पुरुष समास"],  
+            answer: "नञ् तत्पुरुष समास",  
+            exp: "पहिले पद नकार दर्शवणारे (अ, अन, ना, गैर) असेल तर तो नञ् तत्पुरुष समास असतो."  
+        },  
+        {  
+            q: "'घरोघरी' या मराठीतील द्विरावृत्ती झालेल्या शब्दाचा समास कोणता?",  
+            options: ["तत्पुरुष", "अव्ययीभाव", "द्वंद्व", "बहुव्रीही"],  
+            answer: "अव्ययीभाव",  
+            exp: "मराठीत शब्दांची द्विरावृत्ती होऊन बनलेले जोडशब्द क्रियाविशेषणासारखे वापरले जातात, म्हणून ते मराठी अव्ययीभाव समासात येतात."  
+        },  
+        {  
+            q: "'कमलनयन' (कमळासारखे डोळे) हे कोणत्या समासाचे उदाहरण आहे?",  
+            options: ["कर्मधारय समास", "द्विगु समास", "उपपद तत्पुरुष", "अलुक तत्पुरुष"],  
+            answer: "कर्मधारय समास",  
+            exp: "दोन्ही पदे प्रथमा विभक्तीत असून विशेषण-विशेष्य किंवा उपमान-उपमेय संबंध असल्यास कर्मधारय समास होतो."  
+        },  
+        {  
+            q: "'कांदेपोहे' या सामासिक शब्दाचा योग्य विग्रह कोणता?",  
+            options: ["कांदे आणि पोहे", "कांदे घालून केलेले पोहे", "कांदे किंवा पोहे", "कांद्यासारखे पोहे"],  
+            answer: "कांदे घालून केलेले पोहे",  
+            exp: "मध्यमपदलोपी समागात दोन पदांमधील संबंध दाखवणारी मधली पदे (घालून केलेले) विग्रहाच्या वेळी गाळली जातात."  
+        },  
+        {  
+            q: "'दररोज' या सामासिक शब्दाचा योग्य विग्रह व समास कोणता?",  
+            options: ["दर आणि रोज – द्वंद्व समास", "प्रत्येक दिवशी – अव्ययीभाव समास", "रोजचा दिवस – कर्मधारय समास", "दिवसातून रोज – तत्पुरुष समास"],  
+            answer: "प्रत्येक दिवशी – अव्ययीभाव समास",  
+            exp: "'दर' हा फारसी उपसर्ग लागून तयार झालेला हा शब्द 'प्रत्येक दिवशी' असा अर्थ देतो व अव्ययीभाव समासाचे उदाहरण आहे."  
+        },  
+        {  
+            q: "'यथाशक्ती' या सामासिक शब्दाचा विग्रह कसा होतो?",  
+            options: ["शक्तीपेक्षा जास्त", "शक्तीप्रमाणे", "शक्ती आणि युक्ती", "शक्ती नसलेला"],  
+            answer: "शक्तीप्रमाणे",  
+            exp: "'यथा' हा संस्कृत उपसर्ग लागल्यामुळे 'शक्तीप्रमाणे' असा विग्रह होतो (अव्ययीभाव समास)."  
+        },  
+        {  
+            q: "'राजवाडा' या शब्दाचा विग्रह 'राजाचा वाडा' असा होतो. हा कोणता समास आहे?",  
+            options: ["पंचमी तत्पुरुष", "तृतीया तत्पुरुष", "षष्ठी तत्पुरुष", "सप्तमी तत्पुरुष"],  
+            answer: "षष्ठी तत्पुरुष",  
+            exp: "विग्रह करताना 'चा' हा षष्ठी विभक्तीचा प्रत्यय वापरला गेला आहे."  
+        },  
+        {  
+            q: "'भक्तीवश' (भक्तीने वश) या शब्दात कोणती विभक्ती वापरली आहे?",  
+            options: ["तृतीया तत्पुरुष", "द्वितीया तत्पुरुष", "चतुर्थी तत्पुरुष", "सप्तमी तत्पुरुष"],  
+            answer: "तृतीया तत्पुरुष",  
+            exp: "'ने' हा तृतीया विभक्तीचा प्रत्यय लागल्यामुळे हा तृतीया तत्पुरुष समास होतो."  
+        },  
+        {  
+            q: "'बहिणभाऊ' या सामासिक शब्दाचा विग्रह कोणता?",  
+            options: ["बहिण किंवा भाऊ", "बहिण आणि भाऊ", "बहिणीसाठी भाऊ", "बहिणीचा भाऊ"],  
+            answer: "बहिण आणि भाऊ",  
+            exp: "हा इतरेतर द्वंद्व समास आहे, ज्याचा विग्रह 'आणि' या समुच्चयबोधक अव्ययाने होतो."  
+        },  
+        {  
+            q: "'खरेखोटे' या शब्दाचा योग्य विग्रह ओळखा.",  
+            options: ["खरे आणि खोटे", "खरे किंवा खोटे", "खऱ्यासारखे खोटे", "सर्व खरे"],  
+            answer: "खरे किंवा खोटे",  
+            exp: "हा वैकल्पिक द्वंद्व समास आहे, ज्याचा विग्रह 'किंवा' या विकल्पबोधक अव्ययाने होतो."  
+        },  
+        {  
+            q: "'लंबोदर' (लंब आहे उदर ज्याचे तो - गणपती) हा कोणता समास आहे?",  
+            options: ["बहुव्रीही समास", "तत्पुरुष समास", "द्वंद्व समास", "अव्ययीभाव समास"],  
+            answer: "बहुव्रीही समास",  
+            exp: "दोन्ही पदे गौण असून तिसऱ्याच पदाचा (श्री गणपती) बोध होतो, म्हणून हा बहुव्रीही समास आहे."  
+        },  
+        {  
+            q: "'चक्रपाणि' (चक्र आहे पाणिमध्ये/हातात ज्याच्या तो - विष्णू) हे कोणत्या समासाचे उदाहरण आहे?",  
+            options: ["तत्पुरुष समास", "बहुव्रीही समास", "कर्मधारय समास", "द्विगु समास"],  
+            answer: "बहुव्रीही समास",  
+            exp: "दोन्ही पदांवरून तिसऱ्याच व्यक्तीचा (श्रीविष्णू) बोध होत असल्याने हा बहुव्रीही समास आहे."  
+        },  
+        {  
+            q: "'आजन्म' या शब्दाचा विग्रह काय होईल?",  
+            options: ["जन्मापासून", "जन्म आणि मृत्यू", "जन्माच्या वेळी", "प्रत्येक जन्म"],  
+            answer: "जन्मापासून",  
+            exp: "'आ' हा उपसर्ग लागून 'जन्मापासून' असा अर्थ निघतो (अव्ययीभाव समास)."  
+        },  
+        {  
+            q: "'घरधंदा' (घरातील धंदा) या सामासिक शब्दात कोणती विभक्ती आहे?",  
+            options: ["पंचमी तत्पुरुष", "सप्तमी तत्पुरुष", "चतुर्थी तत्पुरुष", "द्वितीया तत्पुरुष"],  
+            answer: "सप्तमी तत्पुरुष",  
+            exp: "'तील/त' हा सप्तमी विभक्तीचा प्रत्यय वापरला गेला आहे."  
+        },  
+        {  
+            q: "'स्त्रीपुरुष' (स्त्री आणि पुरुष) हा कोणत्या प्रकारचा द्वंद्व समास आहे?",  
+            options: ["वैकल्पिक द्वंद्व", "समाहार द्वंद्व", "इतरेतर द्वंद्व", "यांपैकी नाही"],  
+            answer: "इतरेतर द्वंद्व",  
+            exp: "'आणि' या उभयान्वयी अव्ययाने विग्रह होत असल्याने हा इतरेतर द्वंद्व समास आहे."  
+        },  
+        {  
+            q: "'भोजनभाऊ' (भोजनापुरता भाऊ) या सामासिक शब्दाचा समास कोणता?",  
+            options: ["मध्यमपदलोपी तत्पुरुष", "उपपद तत्पुरुष", "अलुक तत्पुरुष", "नञ् तत्पुरुष"],  
+            answer: "मध्यमपदलोपी तत्पुरुष",  
+            exp: "दोन पदांमधील संबंध दाखवणारी मधली पदे (पुरता) विग्रहाच्या वेळी लोप पावतात."  
+        },  
+        {  
+            q: "'निलकंठ' (निळा आहे कंठ ज्याचा तो - शंकर) हा कोणता समास आहे?",  
+            options: ["तत्पुरुष समास", "बहुव्रीही समास", "अव्ययीभाव समास", "द्विगु समास"],  
+            answer: "बहुव्रीही समास",  
+            exp: "दोन्ही पदांवरून तिसऱ्याच विशिष्ट देवतेचा (भगवान शिव) बोध होतो."  
+        },  
+        {  
+            q: "'प्रतिक्षण' या सामासिक शब्दाचा विग्रह कोणता?",  
+            options: ["क्षण आणि क्षण", "प्रत्येक क्षणाला", "एका क्षणात", "काही क्षणांसाठी"],  
+            answer: "प्रत्येक क्षणाला",  
+            exp: "'प्रति' उपसर्गामुळे 'प्रत्येक क्षणाला' असा विग्रह होतो (अव्ययीभाव समास)."  
+        },  
+        {  
+            q: "'गावोगाव' या मराठीतील द्विरावृत्ती झालेल्या शब्दाचा समास कोणता?",  
+            options: ["अव्ययीभाव समास", "तत्पुरुष समास", "द्वंद्व समास", "बहुव्रीही समास"],  
+            answer: "अव्ययीभाव समास",  
+            exp: "मराठीत शब्दांची द्विरावृत्ती होऊन बनलेले जोडशब्द (गावोगाव = प्रत्येक गावी) क्रियाविशेषणासारखे वापरले जातात."  
+        },  
+        {  
+            q: "'नापसंत' (पसंत नसलेला) या सामासिक शब्दाचा समास कोणता?",  
+            options: ["नञ् तत्पुरुष समास", "अलुक तत्पुरुष समास", "उपपद तत्पुरुष समास", "मध्यमपदलोपी समास"],  
+            answer: "नञ् तत्पुरुष समास",  
+            exp: "पहिले पद नकार दर्शवणारे ('ना-') असल्यामुळे हा नञ् तत्पुरुष समास आहे."  
+        },  
+        {  
+            q: "'अंथरूण-पांघरूण' या सामासिक शब्दाचा अचूक समास ओळखा.",  
+            options: ["इतरेतर द्वंद्व", "समाहार द्वंद्व", "वैकल्पिक द्वंद्व", "बहुव्रीही"],  
+            answer: "समाहार द्वंद्व",  
+            exp: "विग्रहामध्ये अंथरण्यासाठी व पांघरण्यासाठी लागणाऱ्या इतर समान वस्तूंचाही समावेश होतो."  
+        },  
+        {  
+            q: "'जितेंद्रिय' (जिंकली आहेत इंद्रिये ज्याने तो) हा कोणत्या प्रकारचा बहुव्रीही समास आहे?",  
+            options: ["द्वितीया विभक्ती बहुव्रीही", "तृतीया विभक्ती बहुव्रीही", "चतुर्थी विभक्ती बहुव्रीही", "षष्ठी विभक्ती बहुव्रीही"],  
+            answer: "तृतीया विभक्ती बहुव्रीही",  
+            exp: "विग्रहाच्या शेवटी 'ज्याने' (तृतीया विभक्तीचे सर्वनाम) येते."  
+        },  
+        {  
+            q: "'बेशिस्त' किंवा 'बिनधोक' हे शब्द कोणत्या समासात मोडतात?",  
+            options: ["मराठी/फारसी उपसर्गघटित अव्ययीभाव समास", "तत्पुरुष समास", "समाहार द्वंद्व समास", "प्रादि बहुव्रीही समास"],  
+            answer: "मराठी/फारसी उपसर्गघटित अव्ययीभाव समास",  
+            exp: "'बे-' आणि 'बिन-' हे फारसी उपसर्ग लागून बनलेले अव्ययीभाव समासाचे शब्द आहेत."  
+        },  
+        {  
+            q: "'ग्रंथकार' (ग्रंथ करणारा) या शब्दातील दुसरे पद 'कार' हे धातूसाधित आहे. हा कोणता समास आहे?",  
+            options: ["अलुक तत्पुरुष", "उपपद (कृदन्त) तत्पुरुष", "नञ् तत्पुरुष", "कर्मधारय"],  
+            answer: "उपपद (कृदन्त) तत्पुरुष",  
+            exp: "दुसरे पद मुख्य असून ते धातूसाधित (कृदन्त) असते व वाक्यात स्वतंत्रपणे वापरता येत नाही."  
+        },  
+        {  
+            q: "'मीठभाकर' या सामासिक शब्दाचा विग्रह व प्रकार कोणता?",  
+            options: ["मीठ आणि भाकर – इतरेतर द्वंद्व", "मीठ, भाकर व साधे खाद्यपदार्थ – समाहार द्वंद्व", "मीठ किंवा भाकर – वैकल्पिक द्वंद्व", "मिठाची भाकर – तत्पुरुष"],  
+            answer: "मीठ, भाकर व साधे खाद्यपदार्थ – समाहार द्वंद्व",  
+            exp: "यात मीठ-भाकरीसोबत इतर साध्या जेवणाचा/खाद्यपदार्थांचा समावेश होतो."  
+        },  
+        {  
+            q: "'अथांग' (नाही थांग ज्याला तो - समुद्र) हा कोणता बहुव्रीही समास आहे?",  
+            options: ["नञ् बहुव्रीही", "सह बहुव्रीही", "प्रादि बहुव्रीही", "विभक्ती बहुव्रीही"],  
+            answer: "नञ् बहुव्रीही",  
+            exp: "पहिले पद नकारदर्शक ('अ-') असून तिसऱ्याच घटकाचा बोध होतो."  
+        },  
+        {  
+            q: "'रक्तचंदन' (रक्तासारखे लाल चंदन) या कर्मधारय समासाचा प्रकार कोणता?",  
+            options: ["विशेषण-पूर्वपद", "उपमान-पूर्वपद", "उपमान-उत्तरपद", "रूपक-उभयपद"],  
+            answer: "उपमान-पूर्वपद",  
+            exp: "'रक्त' (उपमान) हे पहिल्या पदात आल्यामुळे हा उपमान-पूर्वपद कर्मधारय आहे."  
+        },  
+        {  
+            q: "'पास-नापास' या शब्दाचा विग्रह कसा होईल व तो कोणता समास आहे?",  
+            options: ["पास आणि नापास – इतरेतर द्वंद्व", "पास किंवा नापास – वैकल्पिक द्वंद्व", "पास, नापास वगैरे – समाहार द्वंद्व", "यांपैकी नाही"],  
+            answer: "पास किंवा नापास – वैकल्पिक द्वंद्व",  
+            exp: "दोनोंपैकी एकाचीच निवड दर्शवणारा (विकल्प) शब्द आहे."  
+        },  
+        {  
+            q: "'अग्रसर' या सामासिक शब्दात पहिल्या पदाचा विभक्ती प्रत्यय लोप पावत नाही, म्हणून तो कोणता समास मानला जातो?",  
+            options: ["उपपद तत्पुरुष", "अलुक तत्पुरुष", "नञ् तत्पुरुष", "मध्यमपदलोपी तत्पुरुष"],  
+            answer: "अलुक तत्पुरुष",  
+            exp: "'अलुक' म्हणजे ज्या समासात पूर्वपदाच्या विभक्ती प्रत्ययाचा लोप होत नाही."  
+        },  
+        {  
+            q: "'सकुटुंब' (कुटुंबासहित असा जो) या सामासिक शब्दाचा समास ओळखा.",  
+            options: ["सह बहुव्रीही समास", "नञ् बहुव्रीही समास", "अव्ययीभाव समास", "समाहार द्वंद्व समास"],  
+            answer: "सह बहुव्रीही समास",  
+            exp: "'स' किंवा 'सह' हा उपसर्ग लागून बनलेला बहुव्रीही समास आहे."  
+        },  
+        {  
+            q: "'पुरणपोळी' (पुरण घालून केलेली पोळी) या शब्दाचा समास कोणता?",  
+            options: ["कर्मधारय समास", "मध्यमपदलोपी तत्पुरुष समास", "उपपद तत्पुरुष समास", "द्विगु समास"],  
+            answer: "मध्यमपदलोपी तत्पुरुष समास",  
+            exp: "विग्रह करताना 'घालून केलेली' ही मधली पदे गाळली जातात."  
+        },  
+        {  
+            q: "'दशमुख' (दहा आहेत मुखे ज्याला तो - रावण) हा शब्द कोणत्या समासाचे उदाहरण आहे?",  
+            options: ["द्विगु समास", "बहुव्रीही समास", "कर्मधारय समास", "अव्ययीभाव समास"],  
+            answer: "बहुव्रीही समास",  
+            exp: "जरी पहिले पद संख्याविशेषण असले, तरी संपूर्ण शब्दावरून तिसऱ्याच व्यक्तीचा (रावण) बोध होतो, म्हणून हा बहुव्रीही समास आहे."  
+        },  
+        {  
+            q: "'विद्याधन' (विद्या हेच धन) या कर्मधारय समासाचा उपप्रकार कोणता?",  
+            options: ["उपमान-पूर्वपद", "उपमान-उत्तरपद", "रूपक-उभयपद", "विशेषण-उभयपद"],  
+            answer: "रूपक-उभयपद",  
+            exp: "येथे उपमेय (विद्या) व उपमान (धन) एकरूप दाखवले आहेत (विद्या हेच धन)."  
+        }  
+    ];  
+
+    // Global State  
+    let questions = [];  
+    let currentQIndex = 0;  
+    let score = 0;  
+    let timerInterval;  
+    let timeLeft = 45;  
+    let soundEnabled = true;  
+    let answered = false;  
+
+    // Web Audio Synthesizer Engine (KBC Audio FX & Background Drone)  
+    let audioCtx = null;  
+    let bgOsc1 = null, bgOsc2 = null, bgGain = null;  
+    let isBgPlaying = false;  
+
+    function initAudio() {  
+        if (!audioCtx) {  
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
+        }  
+        if (audioCtx.state === 'suspended') {  
+            audioCtx.resume();  
+        }  
+    }  
+
+    // KBC Background Dramatic Drone Sound  
+    function startBackgroundMusic() {  
+        if (!soundEnabled || isBgPlaying) return;  
+        initAudio();  
+
+        try {  
+            bgGain = audioCtx.createGain();  
+            bgGain.gain.setValueAtTime(0.04, audioCtx.currentTime);  
+
+            bgOsc1 = audioCtx.createOscillator();  
+            bgOsc2 = audioCtx.createOscillator();  
+
+            bgOsc1.type = 'sawtooth';  
+            bgOsc2.type = 'sine';  
+
+            bgOsc1.frequency.setValueAtTime(65.41, audioCtx.currentTime); // C2  
+            bgOsc2.frequency.setValueAtTime(130.81, audioCtx.currentTime); // C3  
+
+            bgOsc1.connect(bgGain);  
+            bgOsc2.connect(bgGain);  
+            bgGain.connect(audioCtx.destination);  
+
+            bgOsc1.start();  
+            bgOsc2.start();  
+            isBgPlaying = true;  
+        } catch(e){}  
+    }  
+
+    function stopBackgroundMusic() {  
+        if (isBgPlaying) {  
+            try {  
+                bgOsc1.stop();  
+                bgOsc2.stop();  
+                bgOsc1.disconnect();  
+                bgOsc2.disconnect();  
+            } catch(e){}  
+            isBgPlaying = false;  
+        }  
+    }  
+
+    // Sound Effects  
+    function playTone(freq, type, duration, gainVal = 0.1) {  
+        if (!soundEnabled) return;  
+        initAudio();  
+        try {  
+            const osc = audioCtx.createOscillator();  
+            const gain = audioCtx.createGain();  
+            osc.type = type;  
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);  
+            gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);  
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);  
+            osc.connect(gain);  
+            gain.connect(audioCtx.destination);  
+            osc.start();  
+            osc.stop(audioCtx.currentTime + duration);  
+        } catch(e){}  
+    }  
+
+    function playTickSound() {  
+        playTone(850, 'square', 0.06, 0.05);  
+    }  
+
+    function playCorrectSound() {  
+        initAudio();  
+        const notes = [523.25, 659.25, 783.99, 1046.50];  
+        notes.forEach((freq, i) => {  
+            setTimeout(() => playTone(freq, 'sine', 0.35, 0.15), i * 90);  
+        });  
+    }  
+
+    function playWrongSound() {  
+        initAudio();  
+        const notes = [280, 240, 200, 160];  
+        notes.forEach((freq, i) => {  
+            setTimeout(() => playTone(freq, 'sawtooth', 0.3, 0.2), i * 80);  
+        });  
+    }  
+
+    function toggleSound() {  
+        soundEnabled = !soundEnabled;  
+        document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 आवाज: सुरू" : "🔇 आवाज: बंद";  
+        if (!soundEnabled) {  
+            stopBackgroundMusic();  
+        } else if (document.getElementById('quizScreen').classList.contains('active')) {  
+            startBackgroundMusic();  
+        }  
+    }  
+
+    // Fisher-Yates Shuffle Algorithm  
+    function shuffleArray(array) {  
+        const arr = [...array];  
+        for (let i = arr.length - 1; i > 0; i--) {  
+            const j = Math.floor(Math.random() * (i + 1));  
+            [arr[i], arr[j]] = [arr[j], arr[i]];  
+        }  
+        return arr;  
+    }  
+
+    // Start Quiz  
+    function startQuiz() {  
+        initAudio();  
+        questions = shuffleArray(rawQuestions);  
+        currentQIndex = 0;  
+        score = 0;  
+
+        document.getElementById('startScreen').classList.remove('active');  
+        document.getElementById('resultScreen').classList.remove('active');  
+        document.getElementById('quizScreen').classList.add('active');  
+        document.getElementById('timerBox').style.display = 'flex';  
+
+        startBackgroundMusic();  
+        loadQuestion();  
+    }  
+
+    // Load Question  
+    function loadQuestion() {  
+        answered = false;  
+        clearInterval(timerInterval);  
+        timeLeft = 45;  
+        document.getElementById('timer').innerText = timeLeft;  
+
+        const qData = questions[currentQIndex];  
+        document.getElementById('questionText').innerText = qData.q;  
+
+        const expBox = document.getElementById('explanationBox');  
+        expBox.style.display = 'none';  
+        expBox.className = 'explanation-box';  
+        expBox.innerText = '';  
+
+        const optionsContainer = document.getElementById('optionsContainer');  
+        optionsContainer.innerHTML = '';  
+
+        // Shuffle Options for each question  
+        const shuffledOptions = shuffleArray(qData.options);  
+
+        shuffledOptions.forEach((optText) => {  
+            const btn = document.createElement('button');  
+            btn.className = 'option-btn';  
+            btn.innerText = optText;  
+            btn.onclick = () => checkAnswer(btn, optText, qData.answer, qData.exp);  
+            optionsContainer.appendChild(btn);  
+        });  
+
+        // Timer Loop  
+        timerInterval = setInterval(() => {  
+            timeLeft--;  
+            document.getElementById('timer').innerText = timeLeft;  
+              
+            if (timeLeft <= 10 && timeLeft > 0) {  
+                playTickSound();  
+            }  
+
+            if (timeLeft <= 0) {  
+                clearInterval(timerInterval);  
+                handleTimeout(qData.answer, qData.exp);  
+            }  
+        }, 1000);  
+    }  
+
+    // Check Selected Answer  
+    function checkAnswer(selectedBtn, selectedText, correctText, expText) {  
+        if (answered) return;  
+        answered = true;  
+        clearInterval(timerInterval);  
+
+        const allBtns = document.querySelectorAll('.option-btn');  
+        allBtns.forEach(btn => btn.disabled = true);  
+
+        const expBox = document.getElementById('explanationBox');  
+
+        if (selectedText === correctText) {  
+            selectedBtn.classList.add('correct');  
+            score++;  
+            playCorrectSound();  
+            expBox.classList.add('correct-exp');  
+            expBox.innerHTML = `<strong>बरोबर उत्तर! 🎉</strong><br>${expText}`;  
+        } else {  
+            selectedBtn.classList.add('wrong');  
+            playWrongSound();  
+
+            // Highlight Correct Option  
+            allBtns.forEach(btn => {  
+                if (btn.innerText === correctText) {  
+                    btn.classList.add('correct');  
+                }  
+            });  
+
+            expBox.classList.add('wrong-exp');  
+            expBox.innerHTML = `<strong>चुकीचे उत्तर! ❌ (योग्य उत्तर: ${correctText})</strong><br>${expText}`;  
+        }  
+
+        expBox.style.display = 'block';  
+        setTimeout(nextQuestion, 3500);  
+    }  
+
+    // Timeout Handler  
+    function handleTimeout(correctText, expText) {  
+        if (answered) return;  
+        answered = true;  
+
+        const allBtns = document.querySelectorAll('.option-btn');  
+        allBtns.forEach(btn => {  
+            btn.disabled = true;  
+            if (btn.innerText === correctText) {  
+                btn.classList.add('correct');  
+            }  
+        });  
+
+        playWrongSound();  
+
+        const expBox = document.getElementById('explanationBox');  
+        expBox.classList.add('wrong-exp');  
+        expBox.innerHTML = `<strong>वेळ संपली! ⏳ (योग्य उत्तर: ${correctText})</strong><br>${expText}`;  
+        expBox.style.display = 'block';  
+
+        setTimeout(nextQuestion, 3500);  
+    }  
+
+    // Advance Question  
+    function nextQuestion() {  
+        currentQIndex++;  
+        if (currentQIndex < questions.length) {  
+            loadQuestion();  
+        } else {  
+            showResult();  
+        }  
+    }  
+
+    // Show Final Score Screen  
+    function showResult() {  
+        stopBackgroundMusic();  
+        document.getElementById('quizScreen').classList.remove('active');  
+        document.getElementById('timerBox').style.display = 'none';  
+        document.getElementById('resultScreen').classList.add('active');  
+
+        document.getElementById('scoreDisplay').innerText = `${score} / ${questions.length}`;  
+
+        let msg = "";  
+        const percentage = (score / questions.length) * 100;  
+
+        if (percentage >= 80) {  
+            msg = "उत्कृष्ट कामगिरी! तुमची समासावरील पकड अतिशय भक्कम आहे! 🌟";  
+        } else if (percentage >= 50) {  
+            msg = "छान प्रयत्न! थोड्या अधिक अभ्यासाने तुम्हाला पूर्ण गुण मिळतील. 👍";  
+        } else {  
+            msg = "अजून सरावाची गरज आहे. संकल्पना पुन्हा अभ्यासून प्रयत्न करा. 📚";  
+        }  
+
+        document.getElementById('resultMessage').innerText = msg;  
+    }  
+</script>
+
+</body>  
+</html>
